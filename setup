@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ $UID -ne 0 ]; then
+  echo "Superuser rights required" >&2
+  exit 2
+fi
+
+mkdir -p /etc/jailbox
+cp config /etc/jailbox/config
+cp torrc /etc/jailbox/torrc
+cp jailbox-start /usr/local/bin/jailbox-start
+cp jailbox-stop /usr/local/bin/jailbox-stop
+cp unjailbox /usr/local/bin/unjailbox
+
+chmod +x /usr/local/bin/jailbox-start
+chmod +x /usr/local/bin/jailbox-stop
+chmod +x /usr/local/bin/unjailbox
+
+if command -v systemctl &> /dev/null
+then
+  cp jailbox.service /etc/systemd/system/jailbox.service
+  systemctl daemon-reload
+  echo -e "SystemD found.\nPlease enable jailbox service by running 'systemctl enable jailbox'"
+fi

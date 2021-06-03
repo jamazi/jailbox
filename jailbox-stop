@@ -1,0 +1,47 @@
+#!/bin/bash
+
+if [ $UID -ne 0 ]; then
+  echo "Superuser rights required" >&2
+  exit 2
+fi
+
+source /etc/jailbox/config
+
+for pid in $(cat ${tor_dir}*/tor.pid); do
+  kill $pid
+done
+ip netns delete ${namespace}
+ip link delete ${veth_iface}
+
+_chain_postrouting="${TAG}-POSTROUTING"
+_chain_output="${TAG}-OUTPUT"
+_chain_input="${TAG}-INPUT"
+_chain_forward="${TAG}-FORWARD"
+iptables -t nat -D POSTROUTING -j ${_chain_postrouting}
+iptables -t nat -D OUTPUT -j ${_chain_output}
+iptables -D FORWARD -j ${_chain_forward}
+iptables -D INPUT -j ${_chain_input}
+iptables -D OUTPUT -j ${_chain_output}
+iptables -t nat -F ${_chain_postrouting}
+iptables -t nat -F ${_chain_output}
+iptables -F ${_chain_forward}
+iptables -F ${_chain_input}
+iptables -F ${_chain_output}
+iptables -t nat -X ${_chain_postrouting}
+iptables -t nat -X ${_chain_output}
+iptables -X ${_chain_forward}
+iptables -X ${_chain_input}
+iptables -X ${_chain_output}
+#iptables-save | grep -v "${TAG}" | iptables-restore
+
+# set permissive policies
+iptables -P INPUT ACCEPT
+iptables -P OUTPUT ACCEPT
+iptables -P FORWARD DROP
+
+rm -rf /tmp/tor_*
+
+cat /dev/null >/etc/resolv.conf
+for _nameserver in ${default_nameservers}; do
+  echo "nameserver ${_nameserver}" >>/etc/resolv.conf
+done

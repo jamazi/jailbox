@@ -1,0 +1,41 @@
+#!/bin/bash
+
+source /etc/jailbox/config
+USAGE="Run command without tor.\nUsage: $(basename $0) [-hv] [-u user] [-c command]"
+USER="${current_user}"
+CMD="bash"
+
+# parse command line arguments
+while getopts "hvu:c:" opt; do
+  case "${opt}" in
+  h )
+    echo -e $USAGE
+    exit 0
+    ;;
+  v )
+    echo "Jailbox version ${version}"
+    exit 0
+    ;;
+  u )
+    USER="$OPTARG"
+    ;;
+  c )
+    CMD="$OPTARG"
+    ;;
+  esac
+done
+shift $(expr $OPTIND - 1)
+
+if [ $UID -ne 0 ]; then
+  echo "Superuser rights required" >&2
+  exit 2
+fi
+
+# mount resolv.conf for isolated namespace
+_resolve="/tmp/resolv.conf.$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1)"
+cat /dev/null >${_resolve}
+for _nameserver in ${default_nameservers}; do
+  echo "nameserver ${_nameserver}" >> ${_resolve}
+done
+ip netns exec ${namespace} sh -c "mount --bind ${_resolve} /etc/resolv.conf ; sudo -i -u ${USER} ${CMD}"
+rm -f ${_resolve}

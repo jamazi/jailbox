@@ -1,0 +1,136 @@
+#!/bin/bash
+
+if [ $UID -ne 0 ]; then
+  echo "Superuser rights required" >&2
+  exit 2
+fi
+
+/usr/local/bin/jailbox-stop >/dev/null 2>&1
+
+source /etc/jailbox/config
+
+for i in $(seq 0 $((tor_count - 1))); do
+  data_dir="${tor_dir}_${i}"
+  mkdir -p "${data_dir}"
+  chown -R ${tor_user}:${tor_user} "${data_dir}" && chmod -R 700 "${data_dir}"
+  _transport=$((tor_trans_port + i))
+  _dnsport=$((tor_dns_port + i))
+  sed -e "s|#tor_user|$tor_user|" -e "s|#data_dir|$data_dir|" -e "s|#pid_file|${data_dir}/tor.pid|" -e "s|#tor_virt_addr|$tor_virt_addr|" -e \
+    "s|#tor_trans_port|$_transport|" -e "s|#tor_dns_port|$_dnsport|" /etc/jailbox/torrc >"${data_dir}/torrc"
+  tor -f "${data_dir}/torrc"
+done
+
+# create a new network namespace
+ip netns add ${namespace}
+
+# create two virtual ethernet  interface
+ip link add name ${veth_iface} type veth peer name ${vpeer_iface}
+
+# bind one interface to new namespace
+ip link set ${vpeer_iface} netns ${namespace}
+
+# set interfaces ip and default routing
+ip addr add ${veth_addr} dev ${veth_iface}
+ip netns exec ${namespace} ip addr add ${vpeer_addr} dev ${vpeer_iface}
+ip link set ${veth_iface} up
+ip netns exec ${namespace} ip link set ${vpeer_iface} up
+ip netns exec ${namespace} ip link set lo up
+
+# add default route for veth_addr
+ip netns exec ${namespace} ip route add default via ${veth_addr%/24}
+
+# enable ip forwarding
+echo 1 >/proc/sys/net/ipv4/conf/all/forwarding
+
+_chain_postrouting="${TAG}-POSTROUTING"
+_chain_output="${TAG}-OUTPUT"
+_chain_input="${TAG}-INPUT"
+_chain_forward="${TAG}-FORWARD"
+
+############### *nat
+iptables -t nat -N ${_chain_postrouting}
+iptables -t nat -N ${_chain_output}
+iptables -t nat -I POSTROUTING -j ${_chain_postrouting}
+iptables -t nat -I OUTPUT -j ${_chain_output}
+
+# masquerade traffic from vpn to internet
+iptables -t nat -A ${_chain_postrouting} -s ${vpeer_addr} -j MASQUERADE
+
+#nat .onion addresses
+for i in $(seq ${tor_count} -1 2); do
+  _port=$((tor_trans_port + i - 1))
+  iptables -t nat -A ${_chain_output} -d ${tor_virt_addr} -p tcp -m tcp --syn --match statistic --mode nth --every ${i} --packet 0 -j REDIRECT --to-ports ${_port}
+done
+iptables -t nat -A ${_chain_output} -d ${tor_virt_addr} -p tcp -m tcp --syn -j REDIRECT --to-ports ${tor_trans_port}
+
+# redirect dns to tor
+for i in $(seq ${tor_count} -1 2); do
+  _port=$((tor_dns_port + i - 1))
+  iptables -t nat -A ${_chain_output} -d 127.0.0.1 -p udp --dport 53 --match statistic --mode nth --every ${i} --packet 0 -j REDIRECT --to-ports ${_port}
+done
+iptables -t nat -A ${_chain_output} -d 127.0.0.1 -p udp --dport 53 -j REDIRECT --to-ports ${tor_dns_port}
+
+# skip NATing tor process
+iptables -t nat -A ${_chain_output} -m owner --uid-owner ${tor_uid} -j RETURN
+
+# skip NATing internal lan segments
+for _lan in ${nontor_lan}; do
+  iptables -t nat -A ${_chain_output} -d ${_lan} -j RETURN
+done
+
+# redirect tcp traffic to tor
+for i in $(seq ${tor_count} -1 2); do
+  _port=$((tor_trans_port + i - 1))
+  iptables -t nat -A ${_chain_output} -p tcp --syn --match statistic --mode nth --every ${i} --packet 0 -j REDIRECT --to-ports ${_port}
+done
+iptables -t nat -A ${_chain_output} -p tcp --syn -j REDIRECT --to-ports ${tor_trans_port}
+
+############### *filter
+iptables -N ${_chain_forward}
+iptables -N ${_chain_input}
+iptables -N ${_chain_output}
+iptables -I FORWARD -j ${_chain_forward}
+iptables -I INPUT -j ${_chain_input}
+iptables -I OUTPUT -j ${_chain_output}
+
+#*forward
+# allow traffic forwarding from internet to vpn
+iptables -A ${_chain_forward} -o ${veth_iface} -d ${vpeer_addr} -j ACCEPT
+# allow traffic forwarding from vpn to internet
+iptables -A ${_chain_forward} -i ${veth_iface} -s ${veth_addr} -j ACCEPT
+
+[ ${restrictive} -eq 0 ] || iptables -A ${_chain_forward} -j DROP
+
+#*input
+iptables -A ${_chain_input} -m state --state ESTABLISHED -j ACCEPT
+iptables -A ${_chain_input} -i lo -j ACCEPT
+for _port in ${allowed_ports}; do
+  iptables -A ${_chain_input} -p tcp --dport ${_port} -m state --state NEW -j ACCEPT
+done
+[ ${restrictive} -eq 0 ] || iptables -A ${_chain_input} -j DROP
+
+#*output
+# drop invalid packets
+iptables -A ${_chain_output} -m state --state INVALID -j DROP
+# accept established connections
+iptables -A ${_chain_output} -m state --state ESTABLISHED,RELATED -j ACCEPT
+# accept connection from tor process
+iptables -A ${_chain_output} -m owner --uid-owner ${tor_uid} -j ACCEPT
+# accept tor transproxy
+for i in $(seq 0 $((tor_count - 1))); do
+  _transport=$((tor_trans_port + i))
+  iptables -A ${_chain_output} -d 127.0.0.1 -p tcp -m tcp --syn --dport ${_transport} -j ACCEPT
+done
+# accept connections to internal lan segments
+for _lan in ${nontor_lan}; do
+  iptables -A ${_chain_output} -d ${_lan} -j ACCEPT
+done
+[ ${restrictive} -eq 0 ] || iptables -A ${_chain_output} -j DROP
+
+# set restrictive policies
+iptables -P INPUT DROP
+iptables -P OUTPUT DROP
+iptables -P FORWARD DROP
+
+# configure dns resolver
+echo "nameserver 127.0.0.1" >/etc/resolv.conf

@@ -1,0 +1,12 @@
+[Unit]
+Description=Jailbox
+Before=netwrok.target containerd.service firewalld.service
+
+[Service]
+Type=forking
+ExecStart=/usr/local/bin/jailbox-start
+ExecStop=/usr/local/bin/jailbox-stop
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

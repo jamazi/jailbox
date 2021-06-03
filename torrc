@@ -1,0 +1,11 @@
+User                   #tor_user
+DataDirectory          "#data_dir"
+PidFile                "#pid_file"
+AvoidDiskWrites        1
+AutomapHostsSuffixes   .onion,.exit
+AutomapHostsOnResolve  1
+VirtualAddrNetworkIPv4 #tor_virt_addr
+TransPort              #tor_trans_port
+DNSPort                #tor_dns_port
+SOCKSPort              0
+RunAsDaemon            1
