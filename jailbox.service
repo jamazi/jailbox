@@ -1,6 +1,6 @@
 [Unit]
 Description=Jailbox
-Before=netwrok.target containerd.service firewalld.service
+Before=network.target containerd.service firewalld.service
 
 [Service]
 Type=forking
