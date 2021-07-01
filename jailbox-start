@@ -5,9 +5,11 @@ if [ $UID -ne 0 ]; then
   exit 2
 fi
 
-/usr/local/bin/jailbox-stop >/dev/null 2>&1
-
 source /etc/jailbox/config
+
+if [[ "${PreStart}" ]]; then
+  bash -c "${PreStart}"
+fi
 
 for i in $(seq 0 $((tor_count - 1))); do
   data_dir="${tor_dir}_${i}"
@@ -134,3 +136,7 @@ iptables -P FORWARD DROP
 
 # configure dns resolver
 echo "nameserver 127.0.0.1" >/etc/resolv.conf
+
+if [[ "${PostStart}" ]]; then
+  bash -c "${PostStart}"
+fi

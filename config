@@ -17,3 +17,7 @@ default_nameservers="9.9.9.9 1.1.1.1"
 tor_count=4
 allowed_ports=""
 restrictive=1
+PreStart=
+PostStart=
+PreStop=
+PostStop=

@@ -7,6 +7,10 @@ fi
 
 source /etc/jailbox/config
 
+if [[ "${PreStop}" ]]; then
+  bash -c "${PreStop}"
+fi
+
 for pid in $(cat ${tor_dir}*/tor.pid); do
   kill $pid
 done
@@ -45,3 +49,7 @@ cat /dev/null >/etc/resolv.conf
 for _nameserver in ${default_nameservers}; do
   echo "nameserver ${_nameserver}" >>/etc/resolv.conf
 done
+
+if [[ "${PostStop}" ]]; then
+  bash -c "${PostStop}"
+fi
