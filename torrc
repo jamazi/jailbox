@@ -9,3 +9,6 @@ TransPort              #tor_trans_port
 DNSPort                #tor_dns_port
 SOCKSPort              0
 RunAsDaemon            1
+ClientTransportPlugin  obfs2,obfs3,obfs4,scramblesuit exec /usr/bin/obfs4proxy
+UseBridges             0
+
