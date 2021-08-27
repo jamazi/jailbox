@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# block internet
+iptables -I OUTPUT -j DROP -m comment --comment "block-internet"

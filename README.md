@@ -56,4 +56,4 @@ Some usefull config:
 
 `restrictive`: if `1` jailbox will drop packet before they get to other filter rules, otherwise jailbox will deliver packets to other filter rules.
 
-`PreStart/PostStart/PreStop/PostStop`: Command to run automatically before or after jailbox start/stop.
+`PreStart/PostStart/PreStop/PostStop`: Command to run automatically before or after jailbox start/stop, jailbox-post-start and jailbox-pre-stop scripts can be used here to prevent leak while restarting jailbox.

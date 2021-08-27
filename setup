@@ -10,6 +10,8 @@ cp config /etc/jailbox/config
 cp torrc /etc/jailbox/torrc
 cp jailbox-start /usr/local/bin/jailbox-start
 cp jailbox-stop /usr/local/bin/jailbox-stop
+cp jailbox-post-start /usr/local/bin/jailbox-post-start
+cp jailbox-pre-stop /usr/local/bin/jailbox-pre-stop
 cp unjailbox /usr/local/bin/unjailbox
 
 chmod +x /usr/local/bin/jailbox-start

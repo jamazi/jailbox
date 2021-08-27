@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# unblock internet
+iptables-save | grep -v "block-internet" | iptables-restore
