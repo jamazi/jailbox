@@ -43,8 +43,6 @@ iptables -P INPUT ACCEPT
 iptables -P OUTPUT ACCEPT
 iptables -P FORWARD DROP
 
-rm -rf /tmp/tor_*
-
 cat /dev/null >/etc/resolv.conf
 for _nameserver in ${default_nameservers}; do
   echo "nameserver ${_nameserver}" >>/etc/resolv.conf
