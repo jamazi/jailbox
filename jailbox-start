@@ -131,6 +131,16 @@ for i in $(seq 0 $((tor_count - 1))); do
   _transport=$((tor_trans_port + i))
   iptables -A ${_chain_output} -d 127.0.0.1 -p tcp -m tcp --syn --dport ${_transport} -j ACCEPT
 done
+
+# limit dns requests, avoid tor process eating cpu when there's no internet connection
+if [[ -n "${dns_max_rate}" && -n "${dns_max_burst}" ]]; then
+  for i in $(seq 0 $((tor_count - 1))); do
+    _dns_port=$((tor_dns_port + i))
+    iptables -A ${_chain_output} -d 127.0.0.1 -p udp --dport ${_dns_port} -m state --state NEW -m limit --limit "${dns_max_rate}" --limit-burst "${dns_max_burst}" -j ACCEPT
+    iptables -A ${_chain_output} -d 127.0.0.1 -p udp --dport ${_dns_port} -m state --state NEW -j DROP
+  done
+fi
+
 # accept connections to internal lan segments
 for _lan in ${nontor_lan}; do
   iptables -A ${_chain_output} -d ${_lan} -j ACCEPT
