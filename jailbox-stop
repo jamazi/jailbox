@@ -48,6 +48,8 @@ for _nameserver in ${default_nameservers}; do
   echo "nameserver ${_nameserver}" >>/etc/resolv.conf
 done
 
+rm -rf "/etc/netns/${namespace}"
+
 if [[ "${PostStop}" ]]; then
   bash -c "${PostStop}"
 fi

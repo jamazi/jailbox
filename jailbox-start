@@ -22,6 +22,14 @@ for i in $(seq 0 $((tor_count - 1))); do
   tor -f "${data_dir}/torrc"
 done
 
+# mount resolv.conf for isolated namespace
+mkdir -p "/etc/netns/${namespace}"
+_resolve="/etc/netns/${namespace}/resolv.conf"
+cat /dev/null >${_resolve}
+for _nameserver in ${default_nameservers}; do
+  echo "nameserver ${_nameserver}" >> "${_resolve}"
+done
+
 # create a new network namespace
 ip netns add ${namespace}
 

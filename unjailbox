@@ -31,11 +31,5 @@ if [ $UID -ne 0 ]; then
   exit 2
 fi
 
-# mount resolv.conf for isolated namespace
-_resolve="/tmp/resolv.conf.$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 6 | head -n 1)"
-cat /dev/null >${_resolve}
-for _nameserver in ${default_nameservers}; do
-  echo "nameserver ${_nameserver}" >> ${_resolve}
-done
-ip netns exec ${namespace} sh -c "mount --bind ${_resolve} /etc/resolv.conf ; sudo -i -u ${USER} ${CMD}"
-rm -f ${_resolve}
+# run command in isolated namespace
+ip netns exec "${namespace}" su -c "${CMD}" "${USER}"
