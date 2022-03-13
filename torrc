@@ -5,7 +5,7 @@ AvoidDiskWrites        1
 AutomapHostsSuffixes   .onion,.exit
 AutomapHostsOnResolve  1
 VirtualAddrNetworkIPv4 #tor_virt_addr
-TransPort              #tor_trans_port
+TransPort              #tor_trans_port IsolateDestAddr
 DNSPort                #tor_dns_port
 SOCKSPort              0
 RunAsDaemon            1
