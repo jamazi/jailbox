@@ -54,6 +54,10 @@ Some usefull config:
 
 `allowed_ports`: accept incomming tcp connections to this port (like if you want to accept ssh connections).
 
-`restrictive`: if `1` jailbox will drop packet before they get to other filter rules, otherwise jailbox will deliver packets to other filter rules.
+`restrictive`: if ***not*** `0` jailbox will drop packets before they reach other filter rules, otherwise jailbox will deliver packets to other filter rules.
+
+`allow_udp`: if `1` jailbox will allow outgoing udp connections ***without*** being torifyed.
+
+`allow_icmp`: if `1` jailbox will allow outgoing icmp connections ***without*** being torifyed.
 
 `PreStart/PostStart/PreStop/PostStop`: Command to run automatically before or after jailbox start/stop, jailbox-post-start and jailbox-pre-stop scripts can be used here to prevent leak while restarting jailbox.
