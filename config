@@ -18,6 +18,7 @@ tor_count=1
 allowed_ports=""
 restrictive=1
 allow_udp=0
+allow_icmp=0
 dns_max_rate=
 dns_max_burst=
 PreStart=
