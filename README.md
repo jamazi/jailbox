@@ -58,6 +58,6 @@ Some usefull config:
 
 `allow_udp`: if `1` jailbox will allow outgoing udp connections ***without*** being torifyed.
 
-`allow_icmp`: if `1` jailbox will allow outgoing icmp connections ***without*** being torifyed.
+`allow_ping`: if `1` jailbox will allow outgoing ping requests ***without*** being torifyed.
 
 `PreStart/PostStart/PreStop/PostStop`: Command to run automatically before or after jailbox start/stop, jailbox-post-start and jailbox-pre-stop scripts can be used here to prevent leak while restarting jailbox.

@@ -146,7 +146,7 @@ for _lan in ${nontor_lan}; do
   iptables -A ${_chain_output} -d ${_lan} -j ACCEPT
 done
 [ ${allow_udp} -eq 1 ] && iptables -A ${_chain_output} -p udp ! --dport 53 -m state --state NEW -j ACCEPT
-[ ${allow_icmp} -eq 1 ] && iptables -A ${_chain_output} -p icmp -m state --state NEW -j ACCEPT
+[ ${allow_ping} -eq 1 ] && iptables -A ${_chain_output} -p icmp --icmp-type 8/0 -m state --state NEW -j ACCEPT
 [ ${restrictive} -eq 0 ] || iptables -A ${_chain_output} -j DROP
 
 # set restrictive policies
