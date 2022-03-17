@@ -16,6 +16,7 @@ tor_dir="/tmp/tor_${TAG}"
 default_nameservers="208.67.222.222 9.9.9.9"
 tor_count=1
 allowed_ports=""
+allowed_input_lan=""
 restrictive=1
 allow_udp=0
 allow_ping=0

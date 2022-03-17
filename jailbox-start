@@ -114,6 +114,9 @@ iptables -A ${_chain_forward} -i ${veth_iface} -s ${veth_addr} -j ACCEPT
 #*input
 iptables -A ${_chain_input} -m state --state ESTABLISHED -j ACCEPT
 iptables -A ${_chain_input} -i lo -j ACCEPT
+for _lan in ${allowed_input_lan}; do
+  iptables -A ${_chain_input} -s ${_lan} -m state --state NEW -j ACCEPT
+done
 for _port in ${allowed_ports}; do
   iptables -A ${_chain_input} -p tcp --dport ${_port} -m state --state NEW -j ACCEPT
 done
