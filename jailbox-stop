@@ -14,8 +14,8 @@ fi
 for pid in $(cat ${tor_dir}*/tor.pid); do
   kill $pid
 done
-ip netns delete ${namespace}
-ip link delete ${veth_iface}
+#ip netns delete ${namespace}
+#ip link delete ${veth_iface}
 
 _chain_postrouting="${TAG}-POSTROUTING"
 _chain_output="${TAG}-OUTPUT"
@@ -48,7 +48,7 @@ for _nameserver in ${default_nameservers}; do
   echo "nameserver ${_nameserver}" >>/etc/resolv.conf
 done
 
-rm -rf "/etc/netns/${namespace}"
+#rm -rf "/etc/netns/${namespace}"
 
 if [[ "${PostStop}" ]]; then
   bash -c "${PostStop}"

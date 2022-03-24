@@ -30,24 +30,28 @@ for _nameserver in ${default_nameservers}; do
   echo "nameserver ${_nameserver}" >> "${_resolve}"
 done
 
-# create a new network namespace
-ip netns add ${namespace}
+if ! ip netns list | grep -q "${namespace}"; then
+  # create a new network namespace
+  ip netns add ${namespace}
+fi
 
-# create two virtual ethernet  interface
-ip link add name ${veth_iface} type veth peer name ${vpeer_iface}
+if ! ip link show "${veth_iface}" &>/dev/null; then
+  # create two virtual ethernet  interface
+  ip link add name ${veth_iface} type veth peer name ${vpeer_iface}
 
-# bind one interface to new namespace
-ip link set ${vpeer_iface} netns ${namespace}
+  # bind one interface to new namespace
+  ip link set ${vpeer_iface} netns ${namespace}
 
-# set interfaces ip and default routing
-ip addr add ${veth_addr} dev ${veth_iface}
-ip netns exec ${namespace} ip addr add ${vpeer_addr} dev ${vpeer_iface}
-ip link set ${veth_iface} up
-ip netns exec ${namespace} ip link set ${vpeer_iface} up
-ip netns exec ${namespace} ip link set lo up
+  # set interfaces ip and default routing
+  ip addr add ${veth_addr} dev ${veth_iface}
+  ip netns exec ${namespace} ip addr add ${vpeer_addr} dev ${vpeer_iface}
+  ip link set ${veth_iface} up
+  ip netns exec ${namespace} ip link set ${vpeer_iface} up
+  ip netns exec ${namespace} ip link set lo up
 
-# add default route for veth_addr
-ip netns exec ${namespace} ip route add default via ${veth_addr%/24}
+  # add default route for veth_addr
+  ip netns exec ${namespace} ip route add default via ${veth_addr%/24}
+fi
 
 # enable ip forwarding
 echo 1 >/proc/sys/net/ipv4/conf/all/forwarding
