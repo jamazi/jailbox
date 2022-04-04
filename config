@@ -1,6 +1,5 @@
 TAG="JAILBOX"
 version="20220313"
-current_user=$(/bin/logname)
 veth_iface="vpn-host"
 vpeer_iface="vpn-virt"
 namespace="vpn"

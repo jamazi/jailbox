@@ -2,7 +2,7 @@
 
 source /etc/jailbox/config
 USAGE="Run command without tor.\nUsage: $(basename $0) [-hv] [-u user] [-c command]"
-USER="${current_user}"
+USER="$(/usr/bin/logname)"
 CMD="bash"
 
 # parse command line arguments
