@@ -4,8 +4,8 @@ Before=network.target containerd.service firewalld.service
 
 [Service]
 Type=forking
-ExecStart=/usr/local/bin/jailbox-start
-ExecStop=/usr/local/bin/jailbox-stop
+ExecStart=jailbox-start
+ExecStop=jailbox-stop
 RemainAfterExit=yes
 
 [Install]
