@@ -3,7 +3,6 @@
 source /etc/jailbox/config
 USAGE="Run command without tor.\nUsage: $(basename $0) [-hv] [-u user] [-c command]"
 USER="$(/usr/bin/logname)"
-CMD="bash"
 
 # parse command line arguments
 while getopts "hvu:c:" opt; do
@@ -30,6 +29,8 @@ if [ $UID -ne 0 ]; then
   echo "Superuser rights required" >&2
   exit 2
 fi
+
+CMD="${CMD:-${@:-sh}}
 
 # run command in isolated namespace
 ip netns exec "${namespace}" su -c "${CMD}" "${USER}"
