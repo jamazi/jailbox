@@ -1,47 +1,62 @@
 # jailbox
 Redirect Linux tcp connections through multiple load-balanced tor connections with ability to use direct internet for specific programs.
 
-Instructions:
-=============
+## Installation:
+### Manual:
+- Install Tor:
 
-1. Install Tor:
-
-    debian
-
+    debian:
 
         sudo apt install tor
 
-    arch
-
-        sudo pacman -S tor
-
-2. Clone this repository: 
+- Clone this repository:
 
         git clone https://github.com/jamazi/jailbox.git
 
-3. Run setup: 
+- Run setup script:
 
         sudo ./setup
 
-4. *(optional)* Edit configurations:
+### Archlinux users:
+        yay -S jailbox-git
 
-        sudo vim /etc/jailbox/config
 
-5. Start jailbox:
+<br />
+
+## Usage:
+- Edit configurations *(optional)*:
+
+        sudo nano /etc/jailbox/config
+
+- Start jailbox:
 
         sudo jailbox-start
 
-6. Run program with direct internet connection:
+  or:
 
-        sudo -E unjailbox -u user -c firefox --new-instance -P clearnet
+        sudo systemctl start jailbox
 
-7. Stop jailbox:
+- Run program with direct internet connection, examples:
+
+  shell on current user:
+
+        sudo -E unjailbox
+
+  firefox with specific profile:
+
+        sudo -E unjailbox -c "firefox --new-instance -P clearnet"
+
+  curl on specific user:
+
+        sudo unjailbox -u root curl -v ifconfig.me
+
+- Stop jailbox:
 
         sudo jailbox-stop
 
-    
-### Or you can use systemd to start and stop jailbox service ###
+  or:
 
+        sudo systemctl stop jailbox
 
 <br />
 

@@ -1,5 +1,5 @@
 TAG="JAILBOX"
-version="v0.1.0"
+version="v0.2.0"
 veth_iface="vpn-host"
 vpeer_iface="vpn-virt"
 namespace="vpn"
