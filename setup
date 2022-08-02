@@ -7,6 +7,7 @@ fi
 
 mkdir -p /etc/jailbox
 cp config /etc/jailbox/config
+cp version /etc/jailbox/version
 cp torrc /etc/jailbox/torrc
 cp jailbox-start /usr/local/bin/jailbox-start
 cp jailbox-stop /usr/local/bin/jailbox-stop
