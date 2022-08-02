@@ -5,17 +5,12 @@ if [ $UID -ne 0 ]; then
   exit 2
 fi
 
-mkdir -p /etc/jailbox
-cp config /etc/jailbox/config
-cp version /etc/jailbox/version
-cp torrc /etc/jailbox/torrc
-cp jailbox-start /usr/local/bin/jailbox-start
-cp jailbox-stop /usr/local/bin/jailbox-stop
-cp jailbox-post-start /usr/local/bin/jailbox-post-start
-cp jailbox-pre-stop /usr/local/bin/jailbox-pre-stop
-cp unjailbox /usr/local/bin/unjailbox
-
-chmod +x /usr/local/bin/jailbox-start
-chmod +x /usr/local/bin/jailbox-stop
-chmod +x /usr/local/bin/unjailbox
+install -Dm644 config               /etc/jailbox/config
+install -Dm644 version              /etc/jailbox/version
+install -Dm644 torrc                /etc/jailbox/torrc
+install -Dm755 jailbox-start        /usr/local/bin/jailbox-start
+install -Dm755 jailbox-stop         /usr/local/bin/jailbox-stop
+install -Dm755 jailbox-post-start   /usr/local/bin/jailbox-post-start
+install -Dm755 jailbox-pre-stop     /usr/local/bin/jailbox-pre-stop
+install -Dm755 unjailbox            /usr/local/bin/unjailbox
 
