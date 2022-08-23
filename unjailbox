@@ -30,7 +30,7 @@ if [ $UID -ne 0 ]; then
   exit 2
 fi
 
-CMD="${CMD:-${@:-sh}}
+CMD="${CMD:-${@:-sh}}"
 
 # run command in isolated namespace
 ip netns exec "${namespace}" su -c "${CMD}" "${USER}"
