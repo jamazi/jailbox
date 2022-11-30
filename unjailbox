@@ -33,4 +33,4 @@ fi
 CMD="${CMD:-${@:-sh}}"
 
 # run command in isolated namespace
-ip netns exec "${namespace}" su -c "${CMD}" "${USER}"
+ip netns exec "${namespace}" su -P -c "${CMD}" "${USER}"
