@@ -8,9 +8,9 @@ fi
 install -Dm644 config               /etc/jailbox/config
 install -Dm644 version              /etc/jailbox/version
 install -Dm644 torrc                /etc/jailbox/torrc
-install -Dm755 jailbox-start        /usr/local/bin/jailbox-start
-install -Dm755 jailbox-stop         /usr/local/bin/jailbox-stop
-install -Dm755 jailbox-post-start   /usr/local/bin/jailbox-post-start
-install -Dm755 jailbox-pre-stop     /usr/local/bin/jailbox-pre-stop
-install -Dm755 unjailbox            /usr/local/bin/unjailbox
+install -Dm755 jailbox-start        /usr/bin/jailbox-start
+install -Dm755 jailbox-stop         /usr/bin/jailbox-stop
+install -Dm755 jailbox-post-start   /usr/bin/jailbox-post-start
+install -Dm755 jailbox-pre-stop     /usr/bin/jailbox-pre-stop
+install -Dm755 unjailbox            /usr/bin/unjailbox
 
