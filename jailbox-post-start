@@ -1,4 +1,15 @@
 #!/bin/bash
 
+RULE_NUM=3
+source /etc/jailbox/config
+
 # unblock internet
 iptables-save | grep -v "block-internet" | iptables-restore
+
+# allow mDNS
+iptables -I "${TAG}-INPUT" "${RULE_NUM}" -p udp -d 224.0.0.251 --sport 5353 --dport 5353 -j ACCEPT
+iptables -I "${TAG}-OUTPUT" "${RULE_NUM}" -p udp -d 224.0.0.251 --sport 5353 --dport 5353 -j ACCEPT
+
+# allow dhcp client
+iptables -I "${TAG}-INPUT" "${RULE_NUM}" -p udp --sport 68 --dport 67 -j ACCEPT
+iptables -I "${TAG}-OUTPUT" "${RULE_NUM}" -p udp --sport 67 --dport 68 -j ACCEPT
