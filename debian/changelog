@@ -1,0 +1,5 @@
+jailbox (0.4.0) experimental; urgency=low
+
+  * Initial debian package
+
+ -- jamazi <jamazi@tutanota.com>  Sun, 26 May 2024 17:22:01 +0300

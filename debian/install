@@ -1,0 +1,10 @@
+config etc/jailbox/
+torrc etc/jailbox/
+version etc/jailbox/
+jailbox-start usr/bin/
+jailbox-stop usr/bin/
+jailbox-post-start usr/bin/
+jailbox-pre-stop usr/bin/
+unjailbox usr/bin/
+jailbox.service lib/systemd/system/
+README.md usr/share/doc/jailbox

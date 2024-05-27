@@ -1,0 +1,10 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_installsystemd:
+	dh_installsystemd --name=jailbox
+
+override_dh_installsystemd_start:
+	dh_installsystemd_start --name=jailbox --restart-after-upgrade

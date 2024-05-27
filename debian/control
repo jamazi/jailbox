@@ -1,0 +1,15 @@
+Source: jailbox
+Section: net
+Priority: optional
+Maintainer: jamazi <jamazi@tutanota.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Vcs-Git: https://github.com/jamazi/jailbox.git
+Homepage: https://github.com/jamazi/jailbox
+Rules-Requires-Root: no
+
+Package: jailbox
+Architecture: all
+Depends: ${misc:Depends}, tor, obfs4proxy, iproute2, iptables, bash
+Recommends: network-manager
+Description: Torify the system with multiple tor exit nodes and load balance.
