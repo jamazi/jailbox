@@ -1,0 +1,20 @@
+name: Release
+
+on:
+  push:
+    tags: "v*.*.*"
+
+jobs:
+  build-debs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build debian package
+        uses: jtdor/build-deb-action@v1
+        with:
+          buildpackage-opts: --build=binary --no-sign
+      - name: Create gitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: debian/artifacts/*.deb
