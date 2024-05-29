@@ -6,7 +6,6 @@ if [ $UID -ne 0 ]; then
 fi
 
 install -Dm644 config               /etc/jailbox/config
-install -Dm644 version              /etc/jailbox/version
 install -Dm644 torrc                /etc/jailbox/torrc
 install -Dm755 jailbox-start        /usr/bin/jailbox-start
 install -Dm755 jailbox-stop         /usr/bin/jailbox-stop

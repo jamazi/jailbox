@@ -1,6 +1,5 @@
 config etc/jailbox/
 torrc etc/jailbox/
-version etc/jailbox/
 jailbox-start usr/bin/
 jailbox-stop usr/bin/
 jailbox-post-start usr/bin/

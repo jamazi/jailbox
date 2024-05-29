@@ -27,9 +27,6 @@ PostStart=/usr/bin/jailbox-post-start
 PreStop=/usr/bin/jailbox-pre-stop
 PostStop=
 
-# version
-source /etc/jailbox/version
-
 # custom config
 if [ -f /etc/jailbox/config.d/*.conf ]; then
   source /etc/jailbox/config.d/*.conf
